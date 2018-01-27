@@ -1,0 +1,22 @@
+<div class="container color-dark">
+  <div class = "col">
+    <p>Add a To-Do-list Note</p>
+  </div>
+  <div class = "col">
+    <p> pending Notes ({{itemCount}}) </p>
+  </div>
+</div>
+<div class="container color-light" [@goals]="goals.length">
+  <div class ="col">
+    <p class="sm"> use this form to add a new Note to the list</p>
+    <form>
+      <input type="text" class="txt" name="item" placeholder="my list for today" [(ngModel)]="goalText">
+      <input type="submit" class="btn" [value] = "btnText" (click)="addItem()">
+    </form>
+  </div>
+  <div class="col">
+    <p class="life-container" *ngFor = "let goal of goals; let i = index" (click)="removeItem(i)">
+      {{goal.goalTextValue}}
+    </p>
+  </div>
+</div>
