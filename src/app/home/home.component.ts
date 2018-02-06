@@ -2,13 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { Stream } from 'stream';
 import {trigger, style, transition, animate, keyframes, query, stagger} from '@angular/animations';
 import { CookieService } from 'ngx-cookie-service';
+import { Conditional } from '@angular/compiler';
+
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   animations : [
-      trigger('goals', [
+      trigger('Notes', [
           transition('* => *', [
             query(':enter', style({opacity: 0}), { optional: true}),
 
@@ -35,43 +37,107 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class HomeComponent implements OnInit {
 
-   itemCount = 4;
-   btnText = 'Add a item';
-   goalText: String = 'task for today';
-   goals = [];
+   itemCount = 0;
+   btnText = 'Add a Note';
+   NotesText: String = '';
+   Notes = [];
    cookieValue = 'UNKNOWN';
+   groubedByDates = [];
+   dateStoreValues = [];
 
-  constructor(private cookieService: CookieService) { }
+
+  constructor(private cookieService: CookieService) {
+  }
 
 
 
   ngOnInit() {
-    this.goals = JSON.parse(this.cookieService.get('cookiedata'));
-    this.itemCount = this.goals.length;
+    this.Notes = JSON.parse(this.cookieService.get('cookiedataForNotes'));
+    this.dateStoreValues = JSON.parse(this.cookieService.get('cookiedataForDates'));
+    this.itemCount = this.Notes.length;
+    this.groubedByDates = this.groupBy(this.Notes, 'datevalue');
   }
 
   addItem() {
-    const p = new ListObject(this.goalText, 'sampleValue');
-    this.goals.push(p);
-    this.cookieService.set('cookiedata', JSON.stringify(this.goals));
-    this.goalText = '';
-    this.itemCount = this.goals.length;
-    console.log('goals value' + this.goals);
+    const p = new ListObject(this.NotesText, this.formatDate(Date.now()));
+    this.Notes.push(p);
+    this.dateStoreValues.push(this.formatDate(Date.now()));
+    this.dateStoreValues = this.removeDuplicates(this.dateStoreValues);
+    // groupby
+    this.groubedByDates = this.groupBy(this.Notes, 'datevalue');
+    console.log('grouped data' + JSON.stringify(this.groubedByDates));
+    this.cookieService.set('cookiedataForNotes', JSON.stringify(this.Notes));
+    this.cookieService.set('cookiedataForDates', JSON.stringify(this.dateStoreValues));
+    // setting html
+    this.NotesText = '';
+    this.itemCount = this.Notes.length;
+    console.log('Notes value' + JSON.stringify(this.Notes));
   }
 
-  removeItem(i) {
-    this.goals.splice(i, 1);
-    this.cookieService.set('cookiedata', JSON.stringify(this.goals));
-    this.itemCount = this.goals.length;
+  removeItem(indexValue) {
+    this.Notes.splice(indexValue, 1);
+    this.cookieService.set('cookiedataForNotes', JSON.stringify(this.Notes));
+    this.groubedByDates = this.groupBy(this.Notes, 'datevalue');
+    this.itemCount = this.Notes.length;
+  }
+
+  returnIndexofNote(ClickedNoteValue) {
+    for (let indexValue = 0; indexValue < this.Notes.length; indexValue++) {
+      const entry = this.Notes[indexValue];
+       if (entry.NotesTextValue === ClickedNoteValue) {
+         this.removeItem(indexValue);
+       }
+     }
+  }
+
+  deleteAlldata() {
+    this.dateStoreValues = [];
+    this.Notes = [];
+    this.cookieService.deleteAll('cookiedataForDates');
+    this.cookieService.deleteAll('cookiedataForNotes');
+  }
+
+  formatDate(date) {
+  // tslint:disable-next-line:prefer-const
+  let d = new Date(date),
+    month = '' + (d.getMonth() + 2),
+    day = '' + d.getDate(),
+    // tslint:disable-next-line:prefer-const
+    year = d.getFullYear();
+
+  if (month.length < 2) {month = '0' + month; }
+  if (day.length < 2) { day = '0' + day; }
+
+  return [year, month, day].join('-');
+}
+
+getTextValue(goatextvalue) {
+console.log('goal value clicked' + goatextvalue);
+}
+
+
+  groupBy(xs, key) {
+    return xs.reduce(function (rv, x) {
+      (rv[x[key]] = rv[x[key]] || []).push(x);
+      return rv;
+    }, {});
+  }
+
+  removeDuplicates(datearray) {
+    const temp = [];
+    for (let i = 0; i < datearray.length; i++) {
+      temp[datearray[i]] = true;
+    }
+    return Object.keys(temp);
   }
 
 }
 
 class ListObject {
-  goalTextValue: any;
+  NotesTextValue: any;
   datevalue: any;
-    constructor(goalTextValue, datevalue) {
-      this.goalTextValue = goalTextValue;
+    constructor(NotesTextValue, datevalue) {
+      this.NotesTextValue = NotesTextValue;
       this.datevalue = datevalue;
     }
 

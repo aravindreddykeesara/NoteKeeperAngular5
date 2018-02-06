@@ -22,7 +22,7 @@ import { AboutComponent } from './about/about.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    BrowserAnimationsModule,
+    BrowserAnimationsModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

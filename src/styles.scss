@@ -1,14 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import url('https://fonts.googleapis.com/css?family=Raleway:300,700');
+@import '~bootstrap/dist/css/bootstrap.min.css';
 
 body {
- background: #a466ef;
+ background:  rgb(84, 148, 212);
  padding :3em;
  font-family: 'Raleway','Arial';
- color: #fff;
+ color: rgb(12, 3, 3);
 }
 
+//  rgb(84, 148, 212);
 ul {
     list-style-type: none;
     margin: 0 0 2em 0;
@@ -27,4 +29,31 @@ ul li a {
 a{
     color: #fff;
     text-decoration: none;
+}
+
+/* Titles */
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: #333;
+}
+
+h1 {
+	font-size: 35px;
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+
+
+
+/* Paragraph & Typographic */
+p {
+    line-height: 28px;
+    margin-bottom: 25px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.centered {
+    text-align: center;
 }
